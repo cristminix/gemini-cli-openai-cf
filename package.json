@@ -29,7 +29,7 @@
     "@eslint/js": "^9.32.0",
     "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
-    "@typescript-eslint/parser": "^8.39.1",
+    "@typescript-eslint/parser": "^8.46.3",
     "eslint": "^9.33.0",
     "prettier": "^3.6.2",
     "typedoc": "^0.28.14",
