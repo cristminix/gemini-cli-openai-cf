@@ -1,0 +1,39 @@
+{
+  "entryPoints": [
+    "src/index.ts",
+    "src/auth.ts",
+    "src/config.ts",
+    "src/constants.ts",
+    "src/gemini-client.ts",
+    "src/models.ts",
+    "src/stream-transformer.ts",
+    "src/types.ts",
+    "src/helpers/",
+    "src/middlewares/",
+    "src/routes/",
+    "src/utils/"
+  ],
+  "out": "docs/typedoc",
+  "name": "Gemini CLI OpenAI Worker",
+  "includeVersion": true,
+  "readme": "README.md",
+  "excludeNotDocumented": false,
+  "excludeInternal": false,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "categorizeByGroup": true,
+  "sort": [
+    "kind",
+    "instance-first",
+    "alphabetical"
+  ],
+  "darkHighlightTheme": "github-dark",
+  "lightHighlightTheme": "github-light",
+  "customCss": "assets/custom.css",
+  "visibilityFilters": {
+    "protected": true,
+    "private": false,
+    "inherited": true,
+    "external": false
+  }
+}

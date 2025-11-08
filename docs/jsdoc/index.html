@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>🚀 Gemini CLI OpenAI Worker</h1>
+<p><a href="https://www.buymeacoffee.com/mrproper"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="&quot;Buy Me A Coffee&quot;"></a></p>
+<p>Transform Google's Gemini models into OpenAI-compatible endpoints using Cloudflare Workers. Access Google's most advanced AI models through familiar OpenAI API patterns, powered by OAuth2 authentication and the same infrastructure that drives the official Gemini CLI.</p>
+<h2>✨ Features</h2>
+<ul>
+<li>🔐 <strong>OAuth2 Authentication</strong> - No API keys required, uses your Google account</li>
+<li>🎯 <strong>OpenAI-Compatible API</strong> - Drop-in replacement for OpenAI endpoints</li>
+<li>📚 <strong>OpenAI SDK Support</strong> - Works with official OpenAI SDKs and libraries</li>
+<li>🖼️ <strong>Vision Support</strong> - Multi-modal conversations with images (base64 &amp; URLs)</li>
+<li>🔧 <strong>Tool Calling Support</strong> - Function calling with Gemini API integration</li>
+<li>🧠 <strong>Advanced Reasoning</strong> - Support for Gemini's thinking capabilities with effort controls</li>
+<li>🛡️ <strong>Content Safety</strong> - Configurable Gemini moderation settings</li>
+<li>🌐 <strong>Third-party Integration</strong> - Compatible with Open WebUI, ChatGPT clients, and more</li>
+<li>⚡ <strong>Cloudflare Workers</strong> - Global edge deployment with low latency</li>
+<li>🔄 <strong>Smart Token Caching</strong> - Intelligent token management with KV storage</li>
+<li>🆓 <strong>Free Tier Access</strong> - Leverage Google's free tier through Code Assist API</li>
+<li>📡 <strong>Real-time Streaming</strong> - Server-sent events for live responses with token usage</li>
+<li>🎭 <strong>Multiple Models</strong> - Access to latest Gemini models including experimental ones</li>
+</ul>
+<h2>🤖 Supported Models</h2>
+<table>
+<thead>
+<tr>
+<th>Model ID</th>
+<th>Context Window</th>
+<th>Max Tokens</th>
+<th>Thinking Support</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gemini-2.5-pro</code></td>
+<td>1M</td>
+<td>65K</td>
+<td>✅</td>
+<td>Latest Gemini 2.5 Pro model with reasoning capabilities</td>
+</tr>
+<tr>
+<td><code>gemini-2.5-flash</code></td>
+<td>1M</td>
+<td>65K</td>
+<td>✅</td>
+<td>Fast Gemini 2.5 Flash model with reasoning capabilities</td>
+</tr>
+<tr>
+<td><code>gemini-2.5-flash-lite</code></td>
+<td>1M</td>
+<td>65K</td>
+<td>✅</td>
+<td>Lightweight version of Gemini 2.5 Flash model with reasoning capabilities</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> Gemini 2.5 models have thinking enabled by default. The API automatically manages this:</p>
+<ul>
+<li>When real thinking is disabled (environment), thinking budget is set to 0 to disable it</li>
+<li>When real thinking is enabled (environment), thinking budget defaults to -1 (dynamic allocation by Gemini)</li>
+</ul>
+<p><strong>Thinking support</strong> has two modes:</p>
+<ul>
+<li><strong>Fake thinking</strong>: Set <code>ENABLE_FAKE_THINKING=true</code> to generate synthetic reasoning text (good for testing)</li>
+<li><strong>Real thinking</strong>: Set <code>ENABLE_REAL_THINKING=true</code> to use Gemini's native reasoning capabilities</li>
+</ul>
+<p>Real thinking is controlled entirely by the <code>ENABLE_REAL_THINKING</code> environment variable. You can optionally set a <code>&quot;thinking_budget&quot;</code> in your request (token limit for reasoning, -1 for dynamic allocation, 0 to disable thinking entirely).</p>
+</blockquote>
+<ul>
+<li><strong>Reasoning Effort Support</strong>: You can control the reasoning effort of thinking models by including <code>reasoning_effort</code> in the request body (e.g., <code>extra_body</code> or <code>model_params</code>). This parameter allows you to fine-tune the model's internal reasoning process, balancing between speed and depth of thought.
+<ul>
+<li><code>none</code>: Disables thinking (<code>thinking_budget = 0</code>).</li>
+<li><code>low</code>: Sets <code>thinking_budget = 1024</code>.</li>
+<li><code>medium</code>: Sets <code>thinking_budget = 12288</code> for flash models, <code>16384</code> for other models.</li>
+<li><code>high</code>: Sets <code>thinking_budget = 24576</code> for flash models, <code>32768</code> for other models.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Set <code>STREAM_THINKING_AS_CONTENT=true</code> to stream reasoning as content with <code>&lt;thinking&gt;</code> tags (DeepSeek R1 style) instead of using the reasoning field.</p>
+</blockquote>
+<h2>�🛠️ Setup</h2>
+<h3>Prerequisites</h3>
+<ol>
+<li><strong>Google Account</strong> with access to Gemini</li>
+<li><strong>Cloudflare Account</strong> with Workers enabled</li>
+<li><strong>Wrangler CLI</strong> installed (<code>npm install -g wrangler</code>)</li>
+</ol>
+<h3>Step 1: Get OAuth2 Credentials</h3>
+<p>You need OAuth2 credentials from a Google account that has accessed Gemini. The easiest way to get these is through the official Gemini CLI.</p>
+<h4>Using Gemini CLI</h4>
+<ol>
+<li>
+<p><strong>Install Gemini CLI</strong>:</p>
+<pre class="prettyprint source lang-bash"><code>npm install -g @google/gemini-cli
+</code></pre>
+</li>
+<li>
+<p><strong>Start the Gemini CLI</strong>:</p>
+<pre class="prettyprint source lang-bash"><code>gemini
+</code></pre>
+</li>
+<li>
+<p><strong>Authenticate with Google</strong>:</p>
+<p>Select <code>● Login with Google</code>.</p>
+<p>A browser window will now open prompting you to login with your Google account.</p>
+</li>
+<li>
+<p><strong>Locate the credentials file</strong>:</p>
+<p><strong>Windows:</strong></p>
+<pre class="prettyprint source"><code>C:\Users\USERNAME\.gemini\oauth_creds.json
+</code></pre>
+<p><strong>macOS/Linux:</strong></p>
+<pre class="prettyprint source"><code>~/.gemini/oauth_creds.json
+</code></pre>
+</li>
+<li>
+<p><strong>Copy the credentials</strong>:
+The file contains JSON in this format:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;access_token&quot;: &quot;ya29.a0AS3H6Nx...&quot;,
+  &quot;refresh_token&quot;: &quot;1//09FtpJYpxOd...&quot;,
+  &quot;scope&quot;: &quot;https://www.googleapis.com/auth/cloud-platform ...&quot;,
+  &quot;token_type&quot;: &quot;Bearer&quot;,
+  &quot;id_token&quot;: &quot;eyJhbGciOiJSUzI1NiIs...&quot;,
+  &quot;expiry_date&quot;: 1750927763467
+}
+</code></pre>
+</li>
+</ol>
+<h3>Step 2: Create KV Namespace</h3>
+<pre class="prettyprint source lang-bash"><code># Create a KV namespace for token caching
+wrangler kv namespace create &quot;GEMINI_CLI_KV&quot;
+</code></pre>
+<p>Note the namespace ID returned.
+Update <code>wrangler.toml</code> with your KV namespace ID:</p>
+<pre class="prettyprint source lang-toml"><code>kv_namespaces = [
+  { binding = &quot;GEMINI_CLI_KV&quot;, id = &quot;your-kv-namespace-id&quot; }
+]
+</code></pre>
+<h3>Step 3: Environment Setup</h3>
+<p>Create a <code>.dev.vars</code> file:</p>
+<pre class="prettyprint source lang-bash"><code># Required: OAuth2 credentials JSON from Gemini CLI authentication
+GCP_SERVICE_ACCOUNT={&quot;access_token&quot;:&quot;ya29...&quot;,&quot;refresh_token&quot;:&quot;1//...&quot;,&quot;scope&quot;:&quot;...&quot;,&quot;token_type&quot;:&quot;Bearer&quot;,&quot;id_token&quot;:&quot;eyJ...&quot;,&quot;expiry_date&quot;:1750927763467}
+
+# Optional: Google Cloud Project ID (auto-discovered if not set)
+# GEMINI_PROJECT_ID=your-project-id
+
+# Optional: API key for authentication (if not set, API is public)
+# When set, clients must include &quot;Authorization: Bearer &lt;your-api-key>&quot; header
+# Example: sk-1234567890abcdef1234567890abcdef
+OPENAI_API_KEY=sk-your-secret-api-key-here
+</code></pre>
+<p>For production, set the secrets:</p>
+<pre class="prettyprint source lang-bash"><code>wrangler secret put GCP_SERVICE_ACCOUNT
+wrangler secret put OPENAI_API_KEY  # Optional, only if you want authentication
+</code></pre>
+<h3>Step 4: Deploy</h3>
+<pre class="prettyprint source lang-bash"><code># Install dependencies
+npm install
+
+# Deploy to Cloudflare Workers
+npm run deploy
+
+# Or run locally for development
+npm run dev
+</code></pre>
+<h2>🔧 Configuration</h2>
+<h3>Environment Variables</h3>
+<h4>Core Configuration</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GCP_SERVICE_ACCOUNT</code></td>
+<td>✅</td>
+<td>OAuth2 credentials JSON string.</td>
+</tr>
+<tr>
+<td><code>GEMINI_PROJECT_ID</code></td>
+<td>❌</td>
+<td>Google Cloud Project ID (auto-discovered if not set).</td>
+</tr>
+<tr>
+<td><code>OPENAI_API_KEY</code></td>
+<td>❌</td>
+<td>API key for authentication. If not set, the API is public.</td>
+</tr>
+</tbody>
+</table>
+<h4>Thinking &amp; Reasoning</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ENABLE_FAKE_THINKING</code></td>
+<td>Enable synthetic thinking output for testing (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_REAL_THINKING</code></td>
+<td>Enable real Gemini thinking output (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>STREAM_THINKING_AS_CONTENT</code></td>
+<td>Stream thinking as content with <code>&lt;thinking&gt;</code> tags (DeepSeek R1 style).</td>
+</tr>
+</tbody>
+</table>
+<h4>Model &amp; Feature Flags</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ENABLE_AUTO_MODEL_SWITCHING</code></td>
+<td>Enable automatic fallback from pro to flash models on rate limits (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_GEMINI_NATIVE_TOOLS</code></td>
+<td>Master switch to enable all native tools (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_GOOGLE_SEARCH</code></td>
+<td>Enable Google Search native tool (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_URL_CONTEXT</code></td>
+<td>Enable URL Context native tool (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>GEMINI_TOOLS_PRIORITY</code></td>
+<td>Set tool priority: <code>&quot;native_first&quot;</code> or <code>&quot;custom_first&quot;</code>.</td>
+</tr>
+<tr>
+<td><code>ALLOW_REQUEST_TOOL_CONTROL</code></td>
+<td>Allow request parameters to override tool settings (set to <code>&quot;false&quot;</code> to disable).</td>
+</tr>
+<tr>
+<td><code>ENABLE_INLINE_CITATIONS</code></td>
+<td>Inject markdown citations for search results (set to <code>&quot;true&quot;</code> to enable).</td>
+</tr>
+<tr>
+<td><code>INCLUDE_GROUNDING_METADATA</code></td>
+<td>Include raw grounding metadata in the stream (set to <code>&quot;false&quot;</code> to disable).</td>
+</tr>
+</tbody>
+</table>
+<h4>Content Safety</h4>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GEMINI_MODERATION_HARASSMENT_THRESHOLD</code></td>
+<td>Sets the moderation threshold for harassment content.</td>
+</tr>
+<tr>
+<td><code>GEMINI_MODERATION_HATE_SPEECH_THRESHOLD</code></td>
+<td>Sets the moderation threshold for hate speech content.</td>
+</tr>
+<tr>
+<td><code>GEMINI_MODERATION_SEXUALLY_EXPLICIT_THRESHOLD</code></td>
+<td>Sets the moderation threshold for sexually explicit content.</td>
+</tr>
+<tr>
+<td><code>GEMINI_MODERATION_DANGEROUS_CONTENT_THRESHOLD</code></td>
+<td>Sets the moderation threshold for dangerous content.</td>
+</tr>
+</tbody>
+</table>
+<p><em>For safety thresholds, valid options are: <code>BLOCK_NONE</code>, <code>BLOCK_FEW</code>, <code>BLOCK_SOME</code>, <code>BLOCK_ONLY_HIGH</code>, <code>HARM_BLOCK_THRESHOLD_UNSPECIFIED</code>.</em></p>
+<p><strong>Authentication Security:</strong></p>
+<ul>
+<li>When <code>OPENAI_API_KEY</code> is set, all <code>/v1/*</code> endpoints require authentication.</li>
+<li>Clients must include the header: <code>Authorization: Bearer &lt;your-api-key&gt;</code>.</li>
+<li>Without this environment variable, the API is publicly accessible.</li>
+<li>Recommended format: <code>sk-</code> followed by a random string (e.g., <code>sk-1234567890abcdef...</code>).</li>
+</ul>
+<p><strong>Thinking Models:</strong></p>
+<ul>
+<li><strong>Fake Thinking</strong>: When <code>ENABLE_FAKE_THINKING</code> is set to <code>&quot;true&quot;</code>, models marked with <code>thinking: true</code> will generate synthetic reasoning text before their actual response.</li>
+<li><strong>Real Thinking</strong>: When <code>ENABLE_REAL_THINKING</code> is set to <code>&quot;true&quot;</code>, requests with <code>include_reasoning: true</code> will use Gemini's native thinking capabilities.</li>
+<li>Real thinking provides genuine reasoning from Gemini and requires thinking-capable models (like Gemini 2.5 Pro/Flash).</li>
+<li>You can control the reasoning token budget with the <code>thinking_budget</code> parameter.</li>
+<li>By default, reasoning output is streamed as <code>reasoning</code> chunks in the OpenAI-compatible response format.</li>
+<li>When <code>STREAM_THINKING_AS_CONTENT</code> is also set to <code>&quot;true&quot;</code>, reasoning will be streamed as regular content wrapped in <code>&lt;thinking&gt;&lt;/thinking&gt;</code> tags (DeepSeek R1 style).</li>
+<li><strong>Optimized UX</strong>: The <code>&lt;/thinking&gt;</code> tag is only sent when the actual LLM response begins, eliminating awkward pauses between thinking and response.</li>
+<li>If neither thinking mode is enabled, thinking models will behave like regular models.</li>
+</ul>
+<p><strong>Auto Model Switching:</strong></p>
+<ul>
+<li>When <code>ENABLE_AUTO_MODEL_SWITCHING</code> is set to <code>&quot;true&quot;</code>, the system will automatically fall back from <code>gemini-2.5-pro</code> to <code>gemini-2.5-flash</code> when encountering rate limit errors (HTTP 429 or 503).</li>
+<li>This provides seamless continuity when the Pro model quota is exhausted.</li>
+<li>The fallback is indicated in the response with a notification message.</li>
+<li>Only applies to supported model pairs (currently: pro → flash).</li>
+<li>Works for both streaming and non-streaming requests.</li>
+</ul>
+<h3>KV Namespaces</h3>
+<table>
+<thead>
+<tr>
+<th>Binding</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GEMINI_CLI_KV</code></td>
+<td>Token caching and session management</td>
+</tr>
+</tbody>
+</table>
+<h2>🚨 Troubleshooting</h2>
+<h3>Common Issues</h3>
+<p><strong>401 Authentication Error</strong></p>
+<ul>
+<li>Check if your OAuth2 credentials are valid</li>
+<li>Ensure the refresh token is working</li>
+<li>Verify the credentials format matches exactly</li>
+</ul>
+<p><strong>Token Refresh Failed</strong></p>
+<ul>
+<li>Credentials might be from wrong OAuth2 client</li>
+<li>Refresh token might be expired or revoked</li>
+<li>Check the debug cache endpoint for token status</li>
+</ul>
+<p><strong>Project ID Discovery Failed</strong></p>
+<ul>
+<li>Set <code>GEMINI_PROJECT_ID</code> environment variable manually</li>
+<li>Ensure your Google account has access to Gemini</li>
+</ul>
+<h2>💻 Usage Examples</h2>
+<h3>Cline Integration</h3>
+<p><a href="https://github.com/cline/cline">Cline</a> is a powerful AI assistant extension for VS Code. You can easily configure it to use your Gemini models:</p>
+<ol>
+<li>
+<p><strong>Install Cline</strong> in VS Code from the Extensions marketplace</p>
+</li>
+<li>
+<p><strong>Configure OpenAI API settings</strong>:</p>
+<ul>
+<li>Open Cline settings</li>
+<li>Set <strong>API Provider</strong> to &quot;OpenAI&quot;</li>
+<li>Set <strong>Base URL</strong> to: <code>https://your-worker.workers.dev/v1</code></li>
+<li>Set <strong>API Key</strong> to: <code>sk-your-secret-api-key-here</code> (use your OPENAI_API_KEY if authentication is enabled)</li>
+</ul>
+</li>
+<li>
+<p><strong>Select a model</strong>:</p>
+<ul>
+<li>Choose <code>gemini-2.5-pro</code> for complex reasoning tasks</li>
+<li>Choose <code>gemini-2.5-flash</code> for faster responses</li>
+</ul>
+</li>
+</ol>
+<h3>Open WebUI Integration</h3>
+<ol>
+<li>
+<p><strong>Add as OpenAI-compatible endpoint</strong>:</p>
+<ul>
+<li>Base URL: <code>https://your-worker.workers.dev/v1</code></li>
+<li>API Key: <code>sk-your-secret-api-key-here</code> (use your OPENAI_API_KEY if authentication is enabled)</li>
+</ul>
+</li>
+<li>
+<p><strong>Configure models</strong>:
+Open WebUI will automatically discover available Gemini models through the <code>/v1/models</code> endpoint.</p>
+</li>
+<li>
+<p><strong>Start chatting</strong>:
+Use any Gemini model just like you would with OpenAI models!</p>
+</li>
+</ol>
+<h3>LiteLLM Integration</h3>
+<p><a href="https://github.com/BerriAI/litellm">LiteLLM</a> works seamlessly with this worker, especially when using the DeepSeek R1-style thinking streams:</p>
+<pre class="prettyprint source lang-python"><code>import litellm
+
+# Configure LiteLLM to use your worker
+litellm.api_base = &quot;https://your-worker.workers.dev/v1&quot;
+litellm.api_key = &quot;sk-your-secret-api-key-here&quot;
+
+# Use thinking models with LiteLLM
+response = litellm.completion(
+    model=&quot;gemini-2.5-flash&quot;,
+    messages=[
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Solve this step by step: What is 15 * 24?&quot;}
+    ],
+    stream=True
+)
+
+for chunk in response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end=&quot;&quot;)
+</code></pre>
+<p><strong>Pro Tip</strong>: Set <code>STREAM_THINKING_AS_CONTENT=true</code> for optimal LiteLLM compatibility. The <code>&lt;thinking&gt;</code> tags format works better with LiteLLM's parsing and various downstream tools.</p>
+<h3>OpenAI SDK (Python)</h3>
+<pre class="prettyprint source lang-python"><code>from openai import OpenAI
+
+# Initialize with your worker endpoint
+client = OpenAI(
+    base_url=&quot;https://your-worker.workers.dev/v1&quot;,
+    api_key=&quot;sk-your-secret-api-key-here&quot;  # Use your OPENAI_API_KEY if authentication is enabled
+)
+
+# Chat completion
+response = client.chat.completions.create(
+    model=&quot;gemini-2.5-flash&quot;,
+    messages=[
+        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful assistant.&quot;},
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Explain machine learning in simple terms&quot;}
+    ],
+    stream=True
+)
+
+for chunk in response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end=&quot;&quot;)
+
+# Real thinking mode
+response = client.chat.completions.create(
+    model=&quot;gemini-2.5-pro&quot;,
+    messages=[
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Solve this step by step: What is the derivative of x^3 + 2x^2 - 5x + 3?&quot;}
+    ],
+    extra_body={
+        &quot;include_reasoning&quot;: True,
+        &quot;thinking_budget&quot;: 1024
+    },
+    stream=True
+)
+
+for chunk in response:
+    # Real thinking appears in the reasoning field
+    if hasattr(chunk.choices[0].delta, 'reasoning') and chunk.choices[0].delta.reasoning:
+        print(f&quot;[Thinking] {chunk.choices[0].delta.reasoning}&quot;)
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end=&quot;&quot;)
+</code></pre>
+<h3>OpenAI SDK (JavaScript/TypeScript)</h3>
+<pre class="prettyprint source lang-typescript"><code>import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  baseURL: 'https://your-worker.workers.dev/v1',
+  apiKey: 'sk-your-secret-api-key-here', // Use your OPENAI_API_KEY if authentication is enabled
+});
+
+const stream = await openai.chat.completions.create({
+  model: 'gemini-2.5-flash',
+  messages: [
+    { role: 'user', content: 'Write a haiku about coding' }
+  ],
+  stream: true,
+});
+
+for await (const chunk of stream) {
+  const content = chunk.choices[0]?.delta?.content || '';
+  process.stdout.write(content);
+}
+</code></pre>
+<h3>cURL</h3>
+<pre class="prettyprint source lang-bash"><code>curl -X POST https://your-worker.workers.dev/v1/chat/completions \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer sk-your-secret-api-key-here&quot; \
+  -d '{
+    &quot;model&quot;: &quot;gemini-2.5-flash&quot;,
+    &quot;messages&quot;: [
+      {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Explain quantum computing&quot;}
+    ]
+  }'
+</code></pre>
+<h3>Raw JavaScript/TypeScript</h3>
+<pre class="prettyprint source lang-javascript"><code>const response = await fetch('https://your-worker.workers.dev/v1/chat/completions', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    model: 'gemini-2.5-flash',
+    messages: [
+      { role: 'user', content: 'Hello, world!' }
+    ]
+  })
+});
+
+const reader = response.body.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  
+  const chunk = decoder.decode(value);
+  const lines = chunk.split('\n');
+  
+  for (const line of lines) {
+    if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+      const data = JSON.parse(line.substring(6));
+      const content = data.choices[0]?.delta?.content;
+      if (content) {
+        console.log(content);
+      }
+    }
+  }
+}
+</code></pre>
+<h3>Raw Python (without SDK)</h3>
+<pre class="prettyprint source lang-python"><code>import requests
+import json
+
+url = &quot;https://your-worker.workers.dev/v1/chat/completions&quot;
+data = {
+    &quot;model&quot;: &quot;gemini-2.5-flash&quot;,
+    &quot;messages&quot;: [
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Write a Python function to calculate fibonacci&quot;}
+    ]
+}
+
+response = requests.post(url, json=data, stream=True)
+
+for line in response.iter_lines():
+    if line and line.startswith(b'data: '):
+        try:
+            chunk = json.loads(line[6:].decode())
+            content = chunk['choices'][0]['delta'].get('content', '')
+            if content:
+                print(content, end='')
+        except json.JSONDecodeError:
+            continue
+</code></pre>
+<h2>� Tool Calling Support</h2>
+<p>The worker supports OpenAI-compatible tool calling (function calling) with seamless integration to Gemini's function calling capabilities.</p>
+<h3>Using Tool Calls</h3>
+<p>Include <code>tools</code> and optionally <code>tool_choice</code> in your request:</p>
+<pre class="prettyprint source lang-javascript"><code>const response = await fetch('/v1/chat/completions', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'gemini-2.5-pro',
+    messages: [
+      { role: 'user', content: 'What is the weather in New York?' }
+    ],
+    tools: [
+      {
+        type: 'function',
+        function: {
+          name: 'get_weather',
+          description: 'Get weather information for a location',
+          parameters: {
+            type: 'object',
+            properties: {
+              location: { type: 'string', description: 'City name' }
+            },
+            required: ['location']
+          }
+        }
+      }
+    ],
+    tool_choice: 'auto'
+  })
+});
+</code></pre>
+<h3>Tool Choice Options</h3>
+<ul>
+<li><code>auto</code>: Let the model decide whether to call a function</li>
+<li><code>none</code>: Disable function calling</li>
+<li><code>{&quot;type&quot;: &quot;function&quot;, &quot;function&quot;: {&quot;name&quot;: &quot;function_name&quot;}}</code>: Force a specific function call</li>
+</ul>
+<h2>🛡️ Content Safety Settings</h2>
+<p>Configure Gemini's built-in safety filters using environment variables in the dev.vars:</p>
+<pre class="prettyprint source lang-bash"><code># Safety threshold options: BLOCK_NONE, BLOCK_FEW, BLOCK_SOME, BLOCK_ONLY_HIGH, HARM_BLOCK_THRESHOLD_UNSPECIFIED
+GEMINI_MODERATION_HARASSMENT_THRESHOLD=BLOCK_NONE
+GEMINI_MODERATION_HATE_SPEECH_THRESHOLD=BLOCK_NONE  
+GEMINI_MODERATION_SEXUALLY_EXPLICIT_THRESHOLD=BLOCK_SOME
+GEMINI_MODERATION_DANGEROUS_CONTENT_THRESHOLD=BLOCK_ONLY_HIGH
+</code></pre>
+<p><strong>Safety Categories:</strong></p>
+<ul>
+<li><code>HARASSMENT</code>: Content that promotes hatred or violence against individuals/groups</li>
+<li><code>HATE_SPEECH</code>: Derogatory or demeaning language targeting specific groups</li>
+<li><code>SEXUALLY_EXPLICIT</code>: Content containing sexual or adult material</li>
+<li><code>DANGEROUS_CONTENT</code>: Content promoting dangerous or harmful activities</li>
+</ul>
+<h2>📡 API Endpoints</h2>
+<h3>Base URL</h3>
+<pre class="prettyprint source"><code>https://your-worker.your-subdomain.workers.dev
+</code></pre>
+<h3>List Models</h3>
+<pre class="prettyprint source lang-http"><code>GET /v1/models
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;object&quot;: &quot;list&quot;,
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;gemini-2.5-pro&quot;,
+      &quot;object&quot;: &quot;model&quot;,
+      &quot;created&quot;: 1708976947,
+      &quot;owned_by&quot;: &quot;google-gemini-cli&quot;
+    }
+  ]
+}
+</code></pre>
+<h3>Chat Completions</h3>
+<pre class="prettyprint source lang-http"><code>POST /v1/chat/completions
+Content-Type: application/json
+
+{
+  &quot;model&quot;: &quot;gemini-2.5-flash&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;You are a helpful assistant.&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;, 
+      &quot;content&quot;: &quot;Hello! How are you?&quot;
+    }
+  ]
+}
+</code></pre>
+<h4>Thinking Mode (Real Reasoning)</h4>
+<p>For models that support thinking, you can enable real reasoning from Gemini:</p>
+<pre class="prettyprint source lang-http"><code>POST /v1/chat/completions
+Content-Type: application/json
+
+{
+  &quot;model&quot;: &quot;gemini-2.5-pro&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;, 
+      &quot;content&quot;: &quot;Solve this math problem step by step: What is 15% of 240?&quot;
+    }
+  ],
+  &quot;include_reasoning&quot;: true,
+  &quot;thinking_budget&quot;: 1024
+}
+</code></pre>
+<p>The <code>include_reasoning</code> parameter enables Gemini's native thinking mode, and <code>thinking_budget</code> sets the token limit for reasoning.</p>
+<p><strong>Response (Streaming):</strong></p>
+<pre class="prettyprint source"><code>data: {&quot;id&quot;:&quot;chatcmpl-123&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1708976947,&quot;model&quot;:&quot;gemini-2.5-flash&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:&quot;Hello&quot;},&quot;finish_reason&quot;:null}]}
+
+data: {&quot;id&quot;:&quot;chatcmpl-123&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1708976947,&quot;model&quot;:&quot;gemini-2.5-flash&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{&quot;content&quot;:&quot;! I'm&quot;},&quot;finish_reason&quot;:null}]}
+
+data: {&quot;id&quot;:&quot;chatcmpl-123&quot;,&quot;object&quot;:&quot;chat.completion.chunk&quot;,&quot;created&quot;:1708976947,&quot;model&quot;:&quot;gemini-2.5-flash&quot;,&quot;choices&quot;:[{&quot;index&quot;:0,&quot;delta&quot;:{},&quot;finish_reason&quot;:&quot;stop&quot;}],&quot;usage&quot;:{&quot;prompt_tokens&quot;:22,&quot;completion_tokens&quot;:553,&quot;total_tokens&quot;:575}}
+
+data: [DONE]
+</code></pre>
+<h3>Debug Endpoints</h3>
+<h4>Check Token Cache</h4>
+<pre class="prettyprint source lang-http"><code>GET /v1/debug/cache
+</code></pre>
+<h4>Test Authentication</h4>
+<pre class="prettyprint source lang-http"><code>POST /v1/token-test
+POST /v1/test
+</code></pre>
+<h3>Image Support (Vision)</h3>
+<p>The worker supports multimodal conversations with images for vision-capable models. Images can be provided as base64-encoded data URLs or as external URLs.</p>
+<h4>Supported Image Formats</h4>
+<ul>
+<li>JPEG, PNG, GIF, WebP</li>
+<li>Base64 encoded (recommended for reliability)</li>
+<li>External URLs (may have limitations with some services)</li>
+</ul>
+<h4>Vision-Capable Models</h4>
+<ul>
+<li><code>gemini-2.5-pro</code></li>
+<li><code>gemini-2.5-flash</code></li>
+<li><code>gemini-2.0-flash-001</code></li>
+<li><code>gemini-2.0-flash-lite-preview-02-05</code></li>
+<li><code>gemini-2.0-pro-exp-02-05</code></li>
+</ul>
+<h4>Example with Base64 Image</h4>
+<pre class="prettyprint source lang-python"><code>from openai import OpenAI
+import base64
+
+# Encode your image
+with open(&quot;image.jpg&quot;, &quot;rb&quot;) as image_file:
+    base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+
+client = OpenAI(
+    base_url=&quot;https://your-worker.workers.dev/v1&quot;,
+    api_key=&quot;sk-your-secret-api-key-here&quot;
+)
+
+response = client.chat.completions.create(
+    model=&quot;gemini-2.5-flash&quot;,
+    messages=[
+        {
+            &quot;role&quot;: &quot;user&quot;,
+            &quot;content&quot;: [
+                {
+                    &quot;type&quot;: &quot;text&quot;,
+                    &quot;text&quot;: &quot;What do you see in this image?&quot;
+                },
+                {
+                    &quot;type&quot;: &quot;image_url&quot;,
+                    &quot;image_url&quot;: {
+                        &quot;url&quot;: f&quot;data:image/jpeg;base64,{base64_image}&quot;
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+</code></pre>
+<h4>Example with Image URL</h4>
+<pre class="prettyprint source lang-bash"><code>curl -X POST https://your-worker.workers.dev/v1/chat/completions \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer sk-your-secret-api-key-here&quot; \
+  -d '{
+    &quot;model&quot;: &quot;gemini-2.5-pro&quot;,
+    &quot;messages&quot;: [
+      {
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: [
+          {
+            &quot;type&quot;: &quot;text&quot;,
+            &quot;text&quot;: &quot;Describe this image in detail.&quot;
+          },
+          {
+            &quot;type&quot;: &quot;image_url&quot;,
+            &quot;image_url&quot;: {
+              &quot;url&quot;: &quot;https://example.com/image.jpg&quot;,
+              &quot;detail&quot;: &quot;high&quot;
+            }
+          }
+        ]
+      }
+    ]
+  }'
+</code></pre>
+<h4>Multiple Images</h4>
+<p>You can include multiple images in a single message:</p>
+<pre class="prettyprint source lang-json"><code>{
+  &quot;model&quot;: &quot;gemini-2.5-pro&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: [
+        {
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;text&quot;: &quot;Compare these two images.&quot;
+        },
+        {
+          &quot;type&quot;: &quot;image_url&quot;,
+          &quot;image_url&quot;: {
+            &quot;url&quot;: &quot;data:image/jpeg;base64,...&quot;
+          }
+        },
+        {
+          &quot;type&quot;: &quot;image_url&quot;,
+          &quot;image_url&quot;: {
+            &quot;url&quot;: &quot;data:image/png;base64,...&quot;
+          }
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+<h3>Debug Commands</h3>
+<pre class="prettyprint source lang-bash"><code># Check KV cache status
+curl https://your-worker.workers.dev/v1/debug/cache
+
+# Test authentication only
+curl -X POST https://your-worker.workers.dev/v1/token-test
+
+# Test full flow
+curl -X POST https://your-worker.workers.dev/v1/test
+</code></pre>
+<h2>🏗️ How It Works</h2>
+<pre class="prettyprint source lang-mermaid"><code>graph TD
+    A[Client Request] --> B[Cloudflare Worker]
+    B --> C{Token in KV Cache?}
+    C -->|Yes| D[Use Cached Token]
+    C -->|No| E[Check Environment Token]
+    E --> F{Token Valid?}
+    F -->|Yes| G[Cache & Use Token]
+    F -->|No| H[Refresh Token]
+    H --> I[Cache New Token]
+    D --> J[Call Gemini API]
+    G --> J
+    I --> J
+    J --> K[Stream Response]
+    K --> L[OpenAI Format]
+    L --> M[Client Response]
+</code></pre>
+<p>The worker acts as a translation layer, converting OpenAI API calls to Google's Code Assist API format while managing OAuth2 authentication automatically.</p>
+<h2>🤝 Contributing</h2>
+<ol>
+<li>Fork the repository</li>
+<li>Create a feature branch</li>
+<li>Make your changes</li>
+<li>Test thoroughly</li>
+<li>Submit a pull request</li>
+</ol>
+<h2>📄 License</h2>
+<p>This codebase is provided for personal use and self-hosting only.</p>
+<p>Redistribution of the codebase, whether in original or modified form, is not permitted without prior written consent from the author.</p>
+<p>You may fork and modify the repository solely for the purpose of running and self-hosting your own instance.</p>
+<p>Any other form of distribution, sublicensing, or commercial use is strictly prohibited unless explicitly authorized.</p>
+<h2>🙏 Acknowledgments</h2>
+<ul>
+<li>Inspired by the official <a href="https://github.com/google-gemini/gemini-cli">Google Gemini CLI</a></li>
+<li>Built on <a href="https://workers.cloudflare.com/">Cloudflare Workers</a></li>
+<li>Uses <a href="https://hono.dev/">Hono</a> web framework</li>
+</ul>
+<hr>
+<p><strong>⚠️ Important</strong>: This project uses Google's Code Assist API which may have usage limits and terms of service. Please ensure compliance with Google's policies when using this worker.</p>
+<p><a href="https://www.star-history.com/#GewoonJaap/gemini-cli-openai&amp;Date"><img src="https://api.star-history.com/svg?repos=GewoonJaap/gemini-cli-openai&amp;type=Date" alt="Star History Chart"></a></p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sat Nov 08 2025 17:21:39 GMT+0700 (Indochina Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

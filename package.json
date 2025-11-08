@@ -10,6 +10,7 @@
     "build": "wrangler deploy --dry-run --outdir=dist",
     "lint": "eslint --ext .ts src && npm run tsc",
     "lint:fix": "eslint --ext .ts src --fix",
+    "docs": "typedoc --options typedoc.json",
     "docker:build": "docker-compose build",
     "docker:dev": "docker-compose up --build",
     "docker:start": "docker-compose up",
@@ -31,6 +32,7 @@
     "@typescript-eslint/parser": "^8.39.1",
     "eslint": "^9.33.0",
     "prettier": "^3.6.2",
+    "typedoc": "^0.28.14",
     "typescript": "^5.4.5",
     "wrangler": "^4.30.0"
   }

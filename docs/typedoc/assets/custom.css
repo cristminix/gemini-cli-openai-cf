@@ -1,0 +1,80 @@
+/* Custom CSS for Typedoc documentation */
+:root {
+  /* Custom color variables */
+  --custom-accent-color: #4f46e5;
+  --custom-accent-light: #818cf8;
+  --custom-background: #ffffff;
+  --custom-background-secondary: #f9fafb;
+  --custom-text: #1f2937;
+  --custom-text-aside: #6b7280;
+}
+
+/* Dark theme variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --custom-background: #111827;
+    --custom-background-secondary: #1f2937;
+    --custom-text: #f9fafb;
+    --custom-text-aside: #d1d5db;
+  }
+}
+
+/* Apply custom colors */
+body {
+  background: var(--custom-background);
+  color: var(--custom-text);
+}
+
+.tsd-navigation a,
+.tsd-page-navigation a {
+  transition: all 0.2s ease;
+}
+
+.tsd-navigation a:hover,
+.tsd-page-navigation a:hover {
+  color: var(--custom-accent-color);
+  text-shadow: 0 0 8px rgba(79, 70, 229, 0.3);
+}
+
+.tsd-member {
+  border-left: 3px solid transparent;
+  transition: border-left-color 0.3s ease;
+}
+
+.tsd-member:hover {
+  border-left-color: var(--custom-accent-color);
+}
+
+/* Better code block styling */
+pre, code {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+}
+
+/* Enhanced search styling */
+#tsd-search .field input {
+  background: var(--custom-background-secondary);
+}
+
+/* Better link styling */
+a {
+  color: var(--custom-accent-color);
+}
+
+/* Improved spacing */
+.tsd-panel {
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Better mobile responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .col-sidebar {
+    background: var(--custom-background-secondary);
+  }
+}

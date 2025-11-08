@@ -1,0 +1,627 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Gemini CLI OpenAI Worker - v1.0.0</title><meta name="description" content="Documentation for Gemini CLI OpenAI Worker"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><link rel="stylesheet" href="assets/custom.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">Gemini CLI OpenAI Worker - v1.0.0</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>Gemini CLI OpenAI Worker - v1.0.0</h1></div><div class="tsd-panel tsd-typography"><h1 id="🚀-gemini-cli-openai-worker" class="tsd-anchor-link">🚀 Gemini CLI OpenAI Worker<a href="#🚀-gemini-cli-openai-worker" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1><p><a href="https://www.buymeacoffee.com/mrproper"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="&quot;Buy Me A Coffee&quot;"></a></p>
+<p>Transform Google's Gemini models into OpenAI-compatible endpoints using Cloudflare Workers. Access Google's most advanced AI models through familiar OpenAI API patterns, powered by OAuth2 authentication and the same infrastructure that drives the official Gemini CLI.</p>
+<h2 id="✨-features" class="tsd-anchor-link">✨ Features<a href="#✨-features" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li>🔐 <strong>OAuth2 Authentication</strong> - No API keys required, uses your Google account</li>
+<li>🎯 <strong>OpenAI-Compatible API</strong> - Drop-in replacement for OpenAI endpoints</li>
+<li>📚 <strong>OpenAI SDK Support</strong> - Works with official OpenAI SDKs and libraries</li>
+<li>🖼️ <strong>Vision Support</strong> - Multi-modal conversations with images (base64 &amp; URLs)</li>
+<li>🔧 <strong>Tool Calling Support</strong> - Function calling with Gemini API integration</li>
+<li>🧠 <strong>Advanced Reasoning</strong> - Support for Gemini's thinking capabilities with effort controls</li>
+<li>🛡️ <strong>Content Safety</strong> - Configurable Gemini moderation settings</li>
+<li>🌐 <strong>Third-party Integration</strong> - Compatible with Open WebUI, ChatGPT clients, and more</li>
+<li>⚡ <strong>Cloudflare Workers</strong> - Global edge deployment with low latency</li>
+<li>🔄 <strong>Smart Token Caching</strong> - Intelligent token management with KV storage</li>
+<li>🆓 <strong>Free Tier Access</strong> - Leverage Google's free tier through Code Assist API</li>
+<li>📡 <strong>Real-time Streaming</strong> - Server-sent events for live responses with token usage</li>
+<li>🎭 <strong>Multiple Models</strong> - Access to latest Gemini models including experimental ones</li>
+</ul>
+<h2 id="🤖-supported-models" class="tsd-anchor-link">🤖 Supported Models<a href="#🤖-supported-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><table>
+<thead>
+<tr>
+<th>Model ID</th>
+<th>Context Window</th>
+<th>Max Tokens</th>
+<th>Thinking Support</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gemini-2.5-pro</code></td>
+<td>1M</td>
+<td>65K</td>
+<td>✅</td>
+<td>Latest Gemini 2.5 Pro model with reasoning capabilities</td>
+</tr>
+<tr>
+<td><code>gemini-2.5-flash</code></td>
+<td>1M</td>
+<td>65K</td>
+<td>✅</td>
+<td>Fast Gemini 2.5 Flash model with reasoning capabilities</td>
+</tr>
+<tr>
+<td><code>gemini-2.5-flash-lite</code></td>
+<td>1M</td>
+<td>65K</td>
+<td>✅</td>
+<td>Lightweight version of Gemini 2.5 Flash model with reasoning capabilities</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> Gemini 2.5 models have thinking enabled by default. The API automatically manages this:</p>
+<ul>
+<li>When real thinking is disabled (environment), thinking budget is set to 0 to disable it</li>
+<li>When real thinking is enabled (environment), thinking budget defaults to -1 (dynamic allocation by Gemini)</li>
+</ul>
+<p><strong>Thinking support</strong> has two modes:</p>
+<ul>
+<li><strong>Fake thinking</strong>: Set <code>ENABLE_FAKE_THINKING=true</code> to generate synthetic reasoning text (good for testing)</li>
+<li><strong>Real thinking</strong>: Set <code>ENABLE_REAL_THINKING=true</code> to use Gemini's native reasoning capabilities</li>
+</ul>
+<p>Real thinking is controlled entirely by the <code>ENABLE_REAL_THINKING</code> environment variable. You can optionally set a <code>&quot;thinking_budget&quot;</code> in your request (token limit for reasoning, -1 for dynamic allocation, 0 to disable thinking entirely).</p>
+</blockquote>
+<ul>
+<li><strong>Reasoning Effort Support</strong>: You can control the reasoning effort of thinking models by including <code>reasoning_effort</code> in the request body (e.g., <code>extra_body</code> or <code>model_params</code>). This parameter allows you to fine-tune the model's internal reasoning process, balancing between speed and depth of thought.
+<ul>
+<li><code>none</code>: Disables thinking (<code>thinking_budget = 0</code>).</li>
+<li><code>low</code>: Sets <code>thinking_budget = 1024</code>.</li>
+<li><code>medium</code>: Sets <code>thinking_budget = 12288</code> for flash models, <code>16384</code> for other models.</li>
+<li><code>high</code>: Sets <code>thinking_budget = 24576</code> for flash models, <code>32768</code> for other models.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Set <code>STREAM_THINKING_AS_CONTENT=true</code> to stream reasoning as content with <code>&lt;thinking&gt;</code> tags (DeepSeek R1 style) instead of using the reasoning field.</p>
+</blockquote>
+<h2 id="�🛠️-setup" class="tsd-anchor-link">�🛠️ Setup<a href="#�🛠️-setup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="prerequisites" class="tsd-anchor-link">Prerequisites<a href="#prerequisites" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
+<li><strong>Google Account</strong> with access to Gemini</li>
+<li><strong>Cloudflare Account</strong> with Workers enabled</li>
+<li><strong>Wrangler CLI</strong> installed (<code>npm install -g wrangler</code>)</li>
+</ol>
+<h3 id="step-1-get-oauth2-credentials" class="tsd-anchor-link">Step 1: Get OAuth2 Credentials<a href="#step-1-get-oauth2-credentials" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>You need OAuth2 credentials from a Google account that has accessed Gemini. The easiest way to get these is through the official Gemini CLI.</p>
+<h4 id="using-gemini-cli" class="tsd-anchor-link">Using Gemini CLI<a href="#using-gemini-cli" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><ol>
+<li>
+<p><strong>Install Gemini CLI</strong>:</p>
+<pre><code class="bash"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-3">-g</span><span class="hl-1"> </span><span class="hl-2">@google/gemini-cli</span>
+</code><button type="button">Copy</button></pre>
+
+</li>
+<li>
+<p><strong>Start the Gemini CLI</strong>:</p>
+<pre><code class="bash"><span class="hl-0">gemini</span>
+</code><button type="button">Copy</button></pre>
+
+</li>
+<li>
+<p><strong>Authenticate with Google</strong>:</p>
+<p>Select <code>● Login with Google</code>.</p>
+<p>A browser window will now open prompting you to login with your Google account.</p>
+</li>
+<li>
+<p><strong>Locate the credentials file</strong>:</p>
+<p><strong>Windows:</strong></p>
+<pre><code><span class="hl-0">C</span><span class="hl-1">:\Users\</span><span class="hl-3">USERNAME</span><span class="hl-1">\.gemini\oauth_creds.json</span>
+</code><button>Copy</button></pre>
+
+<p><strong>macOS/Linux:</strong></p>
+<pre><code><span class="hl-4">~/</span><span class="hl-1">.gemini</span><span class="hl-4">/</span><span class="hl-1">oauth_creds.json</span>
+</code><button>Copy</button></pre>
+
+</li>
+<li>
+<p><strong>Copy the credentials</strong>:
+The file contains JSON in this format:</p>
+<pre><code class="json"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;access_token&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;ya29.a0AS3H6Nx...&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;refresh_token&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;1//09FtpJYpxOd...&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;scope&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;https://www.googleapis.com/auth/cloud-platform ...&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;token_type&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;Bearer&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;id_token&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;eyJhbGciOiJSUzI1NiIs...&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;expiry_date&quot;</span><span class="hl-1">: </span><span class="hl-3">1750927763467</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+</li>
+</ol>
+<h3 id="step-2-create-kv-namespace" class="tsd-anchor-link">Step 2: Create KV Namespace<a href="#step-2-create-kv-namespace" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="bash"><span class="hl-5"># Create a KV namespace for token caching</span><br/><span class="hl-0">wrangler</span><span class="hl-1"> </span><span class="hl-2">kv</span><span class="hl-1"> </span><span class="hl-2">namespace</span><span class="hl-1"> </span><span class="hl-2">create</span><span class="hl-1"> </span><span class="hl-2">&quot;GEMINI_CLI_KV&quot;</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Note the namespace ID returned.
+Update <code>wrangler.toml</code> with your KV namespace ID:</p>
+<pre><code class="toml">kv_namespaces = [
+  { binding = "GEMINI_CLI_KV", id = "your-kv-namespace-id" }
+]
+</code><button type="button">Copy</button></pre>
+
+<h3 id="step-3-environment-setup" class="tsd-anchor-link">Step 3: Environment Setup<a href="#step-3-environment-setup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Create a <code>.dev.vars</code> file:</p>
+<pre><code class="bash"><span class="hl-5"># Required: OAuth2 credentials JSON from Gemini CLI authentication</span><br/><span class="hl-1">GCP_SERVICE_ACCOUNT</span><span class="hl-4">=</span><span class="hl-1">{</span><span class="hl-0">&quot;access_token&quot;</span><span class="hl-3">:</span><span class="hl-0">&quot;ya29...&quot;</span><span class="hl-0">,</span><span class="hl-0">&quot;refresh_token&quot;</span><span class="hl-3">:</span><span class="hl-0">&quot;1//...&quot;</span><span class="hl-0">,</span><span class="hl-0">&quot;scope&quot;</span><span class="hl-3">:</span><span class="hl-0">&quot;...&quot;</span><span class="hl-0">,</span><span class="hl-0">&quot;token_type&quot;</span><span class="hl-3">:</span><span class="hl-0">&quot;Bearer&quot;</span><span class="hl-0">,</span><span class="hl-0">&quot;id_token&quot;</span><span class="hl-3">:</span><span class="hl-0">&quot;eyJ...&quot;</span><span class="hl-0">,</span><span class="hl-0">&quot;expiry_date&quot;</span><span class="hl-0">:1750927763467}</span><br/><br/><span class="hl-5"># Optional: Google Cloud Project ID (auto-discovered if not set)</span><br/><span class="hl-5"># GEMINI_PROJECT_ID=your-project-id</span><br/><br/><span class="hl-5"># Optional: API key for authentication (if not set, API is public)</span><br/><span class="hl-5"># When set, clients must include &quot;Authorization: Bearer &lt;your-api-key&gt;&quot; header</span><br/><span class="hl-5"># Example: sk-1234567890abcdef1234567890abcdef</span><br/><span class="hl-1">OPENAI_API_KEY</span><span class="hl-4">=</span><span class="hl-2">sk-your-secret-api-key-here</span>
+</code><button type="button">Copy</button></pre>
+
+<p>For production, set the secrets:</p>
+<pre><code class="bash"><span class="hl-0">wrangler</span><span class="hl-1"> </span><span class="hl-2">secret</span><span class="hl-1"> </span><span class="hl-2">put</span><span class="hl-1"> </span><span class="hl-2">GCP_SERVICE_ACCOUNT</span><br/><span class="hl-0">wrangler</span><span class="hl-1"> </span><span class="hl-2">secret</span><span class="hl-1"> </span><span class="hl-2">put</span><span class="hl-1"> </span><span class="hl-2">OPENAI_API_KEY</span><span class="hl-1">  </span><span class="hl-5"># Optional, only if you want authentication</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="step-4-deploy" class="tsd-anchor-link">Step 4: Deploy<a href="#step-4-deploy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="bash"><span class="hl-5"># Install dependencies</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><br/><br/><span class="hl-5"># Deploy to Cloudflare Workers</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">deploy</span><br/><br/><span class="hl-5"># Or run locally for development</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">dev</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="🔧-configuration" class="tsd-anchor-link">🔧 Configuration<a href="#🔧-configuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="environment-variables" class="tsd-anchor-link">Environment Variables<a href="#environment-variables" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><h4 id="core-configuration" class="tsd-anchor-link">Core Configuration<a href="#core-configuration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GCP_SERVICE_ACCOUNT</code></td>
+<td>✅</td>
+<td>OAuth2 credentials JSON string.</td>
+</tr>
+<tr>
+<td><code>GEMINI_PROJECT_ID</code></td>
+<td>❌</td>
+<td>Google Cloud Project ID (auto-discovered if not set).</td>
+</tr>
+<tr>
+<td><code>OPENAI_API_KEY</code></td>
+<td>❌</td>
+<td>API key for authentication. If not set, the API is public.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="thinking-reasoning" class="tsd-anchor-link">Thinking &amp; Reasoning<a href="#thinking-reasoning" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ENABLE_FAKE_THINKING</code></td>
+<td>Enable synthetic thinking output for testing (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_REAL_THINKING</code></td>
+<td>Enable real Gemini thinking output (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>STREAM_THINKING_AS_CONTENT</code></td>
+<td>Stream thinking as content with <code>&lt;thinking&gt;</code> tags (DeepSeek R1 style).</td>
+</tr>
+</tbody>
+</table>
+<h4 id="model-feature-flags" class="tsd-anchor-link">Model &amp; Feature Flags<a href="#model-feature-flags" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ENABLE_AUTO_MODEL_SWITCHING</code></td>
+<td>Enable automatic fallback from pro to flash models on rate limits (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_GEMINI_NATIVE_TOOLS</code></td>
+<td>Master switch to enable all native tools (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_GOOGLE_SEARCH</code></td>
+<td>Enable Google Search native tool (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>ENABLE_URL_CONTEXT</code></td>
+<td>Enable URL Context native tool (set to <code>&quot;true&quot;</code>).</td>
+</tr>
+<tr>
+<td><code>GEMINI_TOOLS_PRIORITY</code></td>
+<td>Set tool priority: <code>&quot;native_first&quot;</code> or <code>&quot;custom_first&quot;</code>.</td>
+</tr>
+<tr>
+<td><code>ALLOW_REQUEST_TOOL_CONTROL</code></td>
+<td>Allow request parameters to override tool settings (set to <code>&quot;false&quot;</code> to disable).</td>
+</tr>
+<tr>
+<td><code>ENABLE_INLINE_CITATIONS</code></td>
+<td>Inject markdown citations for search results (set to <code>&quot;true&quot;</code> to enable).</td>
+</tr>
+<tr>
+<td><code>INCLUDE_GROUNDING_METADATA</code></td>
+<td>Include raw grounding metadata in the stream (set to <code>&quot;false&quot;</code> to disable).</td>
+</tr>
+</tbody>
+</table>
+<h4 id="content-safety" class="tsd-anchor-link">Content Safety<a href="#content-safety" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GEMINI_MODERATION_HARASSMENT_THRESHOLD</code></td>
+<td>Sets the moderation threshold for harassment content.</td>
+</tr>
+<tr>
+<td><code>GEMINI_MODERATION_HATE_SPEECH_THRESHOLD</code></td>
+<td>Sets the moderation threshold for hate speech content.</td>
+</tr>
+<tr>
+<td><code>GEMINI_MODERATION_SEXUALLY_EXPLICIT_THRESHOLD</code></td>
+<td>Sets the moderation threshold for sexually explicit content.</td>
+</tr>
+<tr>
+<td><code>GEMINI_MODERATION_DANGEROUS_CONTENT_THRESHOLD</code></td>
+<td>Sets the moderation threshold for dangerous content.</td>
+</tr>
+</tbody>
+</table>
+<p><em>For safety thresholds, valid options are: <code>BLOCK_NONE</code>, <code>BLOCK_FEW</code>, <code>BLOCK_SOME</code>, <code>BLOCK_ONLY_HIGH</code>, <code>HARM_BLOCK_THRESHOLD_UNSPECIFIED</code>.</em></p>
+<p><strong>Authentication Security:</strong></p>
+<ul>
+<li>When <code>OPENAI_API_KEY</code> is set, all <code>/v1/*</code> endpoints require authentication.</li>
+<li>Clients must include the header: <code>Authorization: Bearer &lt;your-api-key&gt;</code>.</li>
+<li>Without this environment variable, the API is publicly accessible.</li>
+<li>Recommended format: <code>sk-</code> followed by a random string (e.g., <code>sk-1234567890abcdef...</code>).</li>
+</ul>
+<p><strong>Thinking Models:</strong></p>
+<ul>
+<li><strong>Fake Thinking</strong>: When <code>ENABLE_FAKE_THINKING</code> is set to <code>&quot;true&quot;</code>, models marked with <code>thinking: true</code> will generate synthetic reasoning text before their actual response.</li>
+<li><strong>Real Thinking</strong>: When <code>ENABLE_REAL_THINKING</code> is set to <code>&quot;true&quot;</code>, requests with <code>include_reasoning: true</code> will use Gemini's native thinking capabilities.</li>
+<li>Real thinking provides genuine reasoning from Gemini and requires thinking-capable models (like Gemini 2.5 Pro/Flash).</li>
+<li>You can control the reasoning token budget with the <code>thinking_budget</code> parameter.</li>
+<li>By default, reasoning output is streamed as <code>reasoning</code> chunks in the OpenAI-compatible response format.</li>
+<li>When <code>STREAM_THINKING_AS_CONTENT</code> is also set to <code>&quot;true&quot;</code>, reasoning will be streamed as regular content wrapped in <code>&lt;thinking&gt;&lt;/thinking&gt;</code> tags (DeepSeek R1 style).</li>
+<li><strong>Optimized UX</strong>: The <code>&lt;/thinking&gt;</code> tag is only sent when the actual LLM response begins, eliminating awkward pauses between thinking and response.</li>
+<li>If neither thinking mode is enabled, thinking models will behave like regular models.</li>
+</ul>
+<p><strong>Auto Model Switching:</strong></p>
+<ul>
+<li>When <code>ENABLE_AUTO_MODEL_SWITCHING</code> is set to <code>&quot;true&quot;</code>, the system will automatically fall back from <code>gemini-2.5-pro</code> to <code>gemini-2.5-flash</code> when encountering rate limit errors (HTTP 429 or 503).</li>
+<li>This provides seamless continuity when the Pro model quota is exhausted.</li>
+<li>The fallback is indicated in the response with a notification message.</li>
+<li>Only applies to supported model pairs (currently: pro → flash).</li>
+<li>Works for both streaming and non-streaming requests.</li>
+</ul>
+<h3 id="kv-namespaces" class="tsd-anchor-link">KV Namespaces<a href="#kv-namespaces" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><table>
+<thead>
+<tr>
+<th>Binding</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GEMINI_CLI_KV</code></td>
+<td>Token caching and session management</td>
+</tr>
+</tbody>
+</table>
+<h2 id="🚨-troubleshooting" class="tsd-anchor-link">🚨 Troubleshooting<a href="#🚨-troubleshooting" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="common-issues" class="tsd-anchor-link">Common Issues<a href="#common-issues" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p><strong>401 Authentication Error</strong></p>
+<ul>
+<li>Check if your OAuth2 credentials are valid</li>
+<li>Ensure the refresh token is working</li>
+<li>Verify the credentials format matches exactly</li>
+</ul>
+<p><strong>Token Refresh Failed</strong></p>
+<ul>
+<li>Credentials might be from wrong OAuth2 client</li>
+<li>Refresh token might be expired or revoked</li>
+<li>Check the debug cache endpoint for token status</li>
+</ul>
+<p><strong>Project ID Discovery Failed</strong></p>
+<ul>
+<li>Set <code>GEMINI_PROJECT_ID</code> environment variable manually</li>
+<li>Ensure your Google account has access to Gemini</li>
+</ul>
+<h2 id="💻-usage-examples" class="tsd-anchor-link">💻 Usage Examples<a href="#💻-usage-examples" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="cline-integration" class="tsd-anchor-link">Cline Integration<a href="#cline-integration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p><a href="https://github.com/cline/cline">Cline</a> is a powerful AI assistant extension for VS Code. You can easily configure it to use your Gemini models:</p>
+<ol>
+<li>
+<p><strong>Install Cline</strong> in VS Code from the Extensions marketplace</p>
+</li>
+<li>
+<p><strong>Configure OpenAI API settings</strong>:</p>
+<ul>
+<li>Open Cline settings</li>
+<li>Set <strong>API Provider</strong> to &quot;OpenAI&quot;</li>
+<li>Set <strong>Base URL</strong> to: <code>https://your-worker.workers.dev/v1</code></li>
+<li>Set <strong>API Key</strong> to: <code>sk-your-secret-api-key-here</code> (use your OPENAI_API_KEY if authentication is enabled)</li>
+</ul>
+</li>
+<li>
+<p><strong>Select a model</strong>:</p>
+<ul>
+<li>Choose <code>gemini-2.5-pro</code> for complex reasoning tasks</li>
+<li>Choose <code>gemini-2.5-flash</code> for faster responses</li>
+</ul>
+</li>
+</ol>
+<h3 id="open-webui-integration" class="tsd-anchor-link">Open WebUI Integration<a href="#open-webui-integration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
+<li>
+<p><strong>Add as OpenAI-compatible endpoint</strong>:</p>
+<ul>
+<li>Base URL: <code>https://your-worker.workers.dev/v1</code></li>
+<li>API Key: <code>sk-your-secret-api-key-here</code> (use your OPENAI_API_KEY if authentication is enabled)</li>
+</ul>
+</li>
+<li>
+<p><strong>Configure models</strong>:
+Open WebUI will automatically discover available Gemini models through the <code>/v1/models</code> endpoint.</p>
+</li>
+<li>
+<p><strong>Start chatting</strong>:
+Use any Gemini model just like you would with OpenAI models!</p>
+</li>
+</ol>
+<h3 id="litellm-integration" class="tsd-anchor-link">LiteLLM Integration<a href="#litellm-integration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p><a href="https://github.com/BerriAI/litellm">LiteLLM</a> works seamlessly with this worker, especially when using the DeepSeek R1-style thinking streams:</p>
+<pre><code class="python">import litellm
+
+# Configure LiteLLM to use your worker
+litellm.api_base = "https://your-worker.workers.dev/v1"
+litellm.api_key = "sk-your-secret-api-key-here"
+
+# Use thinking models with LiteLLM
+response = litellm.completion(
+    model="gemini-2.5-flash",
+    messages=[
+        {"role": "user", "content": "Solve this step by step: What is 15 * 24?"}
+    ],
+    stream=True
+)
+
+for chunk in response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+</code><button type="button">Copy</button></pre>
+
+<p><strong>Pro Tip</strong>: Set <code>STREAM_THINKING_AS_CONTENT=true</code> for optimal LiteLLM compatibility. The <code>&lt;thinking&gt;</code> tags format works better with LiteLLM's parsing and various downstream tools.</p>
+<h3 id="openai-sdk-python" class="tsd-anchor-link">OpenAI SDK (Python)<a href="#openai-sdk-python" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="python">from openai import OpenAI
+
+# Initialize with your worker endpoint
+client = OpenAI(
+    base_url="https://your-worker.workers.dev/v1",
+    api_key="sk-your-secret-api-key-here"  # Use your OPENAI_API_KEY if authentication is enabled
+)
+
+# Chat completion
+response = client.chat.completions.create(
+    model="gemini-2.5-flash",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain machine learning in simple terms"}
+    ],
+    stream=True
+)
+
+for chunk in response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+
+# Real thinking mode
+response = client.chat.completions.create(
+    model="gemini-2.5-pro",
+    messages=[
+        {"role": "user", "content": "Solve this step by step: What is the derivative of x^3 + 2x^2 - 5x + 3?"}
+    ],
+    extra_body={
+        "include_reasoning": True,
+        "thinking_budget": 1024
+    },
+    stream=True
+)
+
+for chunk in response:
+    # Real thinking appears in the reasoning field
+    if hasattr(chunk.choices[0].delta, 'reasoning') and chunk.choices[0].delta.reasoning:
+        print(f"[Thinking] {chunk.choices[0].delta.reasoning}")
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+</code><button type="button">Copy</button></pre>
+
+<h3 id="openai-sdk-javascripttypescript" class="tsd-anchor-link">OpenAI SDK (JavaScript/TypeScript)<a href="#openai-sdk-javascripttypescript" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="typescript"><span class="hl-4">import</span><span class="hl-1"> OpenAI </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;openai&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">openai</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-0">OpenAI</span><span class="hl-1">({</span><br/><span class="hl-1">  baseURL: </span><span class="hl-2">&#39;https://your-worker.workers.dev/v1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  apiKey: </span><span class="hl-2">&#39;sk-your-secret-api-key-here&#39;</span><span class="hl-1">, </span><span class="hl-5">// Use your OPENAI_API_KEY if authentication is enabled</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">stream</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> </span><span class="hl-4">await</span><span class="hl-1"> openai.chat.completions.</span><span class="hl-0">create</span><span class="hl-1">({</span><br/><span class="hl-1">  model: </span><span class="hl-2">&#39;gemini-2.5-flash&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  messages: [</span><br/><span class="hl-1">    { role: </span><span class="hl-2">&#39;user&#39;</span><span class="hl-1">, content: </span><span class="hl-2">&#39;Write a haiku about coding&#39;</span><span class="hl-1"> }</span><br/><span class="hl-1">  ],</span><br/><span class="hl-1">  stream: </span><span class="hl-3">true</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-4">for</span><span class="hl-1"> </span><span class="hl-4">await</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">chunk</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> stream) {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">content</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> chunk.choices[</span><span class="hl-3">0</span><span class="hl-1">]?.delta?.content </span><span class="hl-4">||</span><span class="hl-1"> </span><span class="hl-2">&#39;&#39;</span><span class="hl-1">;</span><br/><span class="hl-1">  process.stdout.</span><span class="hl-0">write</span><span class="hl-1">(content);</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="curl" class="tsd-anchor-link">cURL<a href="#curl" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="bash"><span class="hl-0">curl</span><span class="hl-1"> </span><span class="hl-3">-X</span><span class="hl-1"> </span><span class="hl-2">POST</span><span class="hl-1"> </span><span class="hl-2">https://your-worker.workers.dev/v1/chat/completions</span><span class="hl-1"> </span><span class="hl-3">\</span><br/><span class="hl-1">  </span><span class="hl-3">-H</span><span class="hl-1"> </span><span class="hl-2">&quot;Content-Type: application/json&quot;</span><span class="hl-1"> </span><span class="hl-3">\</span><br/><span class="hl-1">  </span><span class="hl-3">-H</span><span class="hl-1"> </span><span class="hl-2">&quot;Authorization: Bearer sk-your-secret-api-key-here&quot;</span><span class="hl-1"> </span><span class="hl-3">\</span><br/><span class="hl-1">  </span><span class="hl-3">-d</span><span class="hl-1"> </span><span class="hl-2">&#39;{</span><br/><span class="hl-2">    &quot;model&quot;: &quot;gemini-2.5-flash&quot;,</span><br/><span class="hl-2">    &quot;messages&quot;: [</span><br/><span class="hl-2">      {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Explain quantum computing&quot;}</span><br/><span class="hl-2">    ]</span><br/><span class="hl-2">  }&#39;</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="raw-javascripttypescript" class="tsd-anchor-link">Raw JavaScript/TypeScript<a href="#raw-javascripttypescript" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="javascript"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">response</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> </span><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-0">fetch</span><span class="hl-1">(</span><span class="hl-2">&#39;https://your-worker.workers.dev/v1/chat/completions&#39;</span><span class="hl-1">, {</span><br/><span class="hl-1">  method: </span><span class="hl-2">&#39;POST&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  headers: {</span><br/><span class="hl-1">    </span><span class="hl-2">&#39;Content-Type&#39;</span><span class="hl-1">: </span><span class="hl-2">&#39;application/json&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  },</span><br/><span class="hl-1">  body: </span><span class="hl-3">JSON</span><span class="hl-1">.</span><span class="hl-0">stringify</span><span class="hl-1">({</span><br/><span class="hl-1">    model: </span><span class="hl-2">&#39;gemini-2.5-flash&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    messages: [</span><br/><span class="hl-1">      { role: </span><span class="hl-2">&#39;user&#39;</span><span class="hl-1">, content: </span><span class="hl-2">&#39;Hello, world!&#39;</span><span class="hl-1"> }</span><br/><span class="hl-1">    ]</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">reader</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> response.body.</span><span class="hl-0">getReader</span><span class="hl-1">();</span><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">decoder</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-0">TextDecoder</span><span class="hl-1">();</span><br/><br/><span class="hl-4">while</span><span class="hl-1"> (</span><span class="hl-3">true</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> { </span><span class="hl-3">done</span><span class="hl-1">, </span><span class="hl-3">value</span><span class="hl-1"> } </span><span class="hl-4">=</span><span class="hl-1"> </span><span class="hl-4">await</span><span class="hl-1"> reader.</span><span class="hl-0">read</span><span class="hl-1">();</span><br/><span class="hl-1">  </span><span class="hl-4">if</span><span class="hl-1"> (done) </span><span class="hl-4">break</span><span class="hl-1">;</span><br/><span class="hl-1">  </span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">chunk</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> decoder.</span><span class="hl-0">decode</span><span class="hl-1">(value);</span><br/><span class="hl-1">  </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">lines</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> chunk.</span><span class="hl-0">split</span><span class="hl-1">(</span><span class="hl-2">&#39;</span><span class="hl-3">\n</span><span class="hl-2">&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><br/><span class="hl-1">  </span><span class="hl-4">for</span><span class="hl-1"> (</span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">line</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> lines) {</span><br/><span class="hl-1">    </span><span class="hl-4">if</span><span class="hl-1"> (line.</span><span class="hl-0">startsWith</span><span class="hl-1">(</span><span class="hl-2">&#39;data: &#39;</span><span class="hl-1">) </span><span class="hl-4">&amp;&amp;</span><span class="hl-1"> line </span><span class="hl-4">!==</span><span class="hl-1"> </span><span class="hl-2">&#39;data: [DONE]&#39;</span><span class="hl-1">) {</span><br/><span class="hl-1">      </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">data</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> </span><span class="hl-3">JSON</span><span class="hl-1">.</span><span class="hl-0">parse</span><span class="hl-1">(line.</span><span class="hl-0">substring</span><span class="hl-1">(</span><span class="hl-3">6</span><span class="hl-1">));</span><br/><span class="hl-1">      </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">content</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> data.choices[</span><span class="hl-3">0</span><span class="hl-1">]?.delta?.content;</span><br/><span class="hl-1">      </span><span class="hl-4">if</span><span class="hl-1"> (content) {</span><br/><span class="hl-1">        console.</span><span class="hl-0">log</span><span class="hl-1">(content);</span><br/><span class="hl-1">      }</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="raw-python-without-sdk" class="tsd-anchor-link">Raw Python (without SDK)<a href="#raw-python-without-sdk" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="python">import requests
+import json
+
+url = "https://your-worker.workers.dev/v1/chat/completions"
+data = {
+    "model": "gemini-2.5-flash",
+    "messages": [
+        {"role": "user", "content": "Write a Python function to calculate fibonacci"}
+    ]
+}
+
+response = requests.post(url, json=data, stream=True)
+
+for line in response.iter_lines():
+    if line and line.startswith(b'data: '):
+        try:
+            chunk = json.loads(line[6:].decode())
+            content = chunk['choices'][0]['delta'].get('content', '')
+            if content:
+                print(content, end='')
+        except json.JSONDecodeError:
+            continue
+</code><button type="button">Copy</button></pre>
+
+<h2 id="�-tool-calling-support" class="tsd-anchor-link">� Tool Calling Support<a href="#�-tool-calling-support" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>The worker supports OpenAI-compatible tool calling (function calling) with seamless integration to Gemini's function calling capabilities.</p>
+<h3 id="using-tool-calls" class="tsd-anchor-link">Using Tool Calls<a href="#using-tool-calls" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>Include <code>tools</code> and optionally <code>tool_choice</code> in your request:</p>
+<pre><code class="javascript"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-3">response</span><span class="hl-1"> </span><span class="hl-4">=</span><span class="hl-1"> </span><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-0">fetch</span><span class="hl-1">(</span><span class="hl-2">&#39;/v1/chat/completions&#39;</span><span class="hl-1">, {</span><br/><span class="hl-1">  method: </span><span class="hl-2">&#39;POST&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  headers: { </span><span class="hl-2">&#39;Content-Type&#39;</span><span class="hl-1">: </span><span class="hl-2">&#39;application/json&#39;</span><span class="hl-1"> },</span><br/><span class="hl-1">  body: </span><span class="hl-3">JSON</span><span class="hl-1">.</span><span class="hl-0">stringify</span><span class="hl-1">({</span><br/><span class="hl-1">    model: </span><span class="hl-2">&#39;gemini-2.5-pro&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    messages: [</span><br/><span class="hl-1">      { role: </span><span class="hl-2">&#39;user&#39;</span><span class="hl-1">, content: </span><span class="hl-2">&#39;What is the weather in New York?&#39;</span><span class="hl-1"> }</span><br/><span class="hl-1">    ],</span><br/><span class="hl-1">    tools: [</span><br/><span class="hl-1">      {</span><br/><span class="hl-1">        type: </span><span class="hl-2">&#39;function&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        function: {</span><br/><span class="hl-1">          name: </span><span class="hl-2">&#39;get_weather&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">          description: </span><span class="hl-2">&#39;Get weather information for a location&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">          parameters: {</span><br/><span class="hl-1">            type: </span><span class="hl-2">&#39;object&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">            properties: {</span><br/><span class="hl-1">              location: { type: </span><span class="hl-2">&#39;string&#39;</span><span class="hl-1">, description: </span><span class="hl-2">&#39;City name&#39;</span><span class="hl-1"> }</span><br/><span class="hl-1">            },</span><br/><span class="hl-1">            required: [</span><span class="hl-2">&#39;location&#39;</span><span class="hl-1">]</span><br/><span class="hl-1">          }</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">      }</span><br/><span class="hl-1">    ],</span><br/><span class="hl-1">    tool_choice: </span><span class="hl-2">&#39;auto&#39;</span><br/><span class="hl-1">  })</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="tool-choice-options" class="tsd-anchor-link">Tool Choice Options<a href="#tool-choice-options" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
+<li><code>auto</code>: Let the model decide whether to call a function</li>
+<li><code>none</code>: Disable function calling</li>
+<li><code>{&quot;type&quot;: &quot;function&quot;, &quot;function&quot;: {&quot;name&quot;: &quot;function_name&quot;}}</code>: Force a specific function call</li>
+</ul>
+<h2 id="🛡️-content-safety-settings" class="tsd-anchor-link">🛡️ Content Safety Settings<a href="#🛡️-content-safety-settings" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Configure Gemini's built-in safety filters using environment variables in the dev.vars:</p>
+<pre><code class="bash"><span class="hl-5"># Safety threshold options: BLOCK_NONE, BLOCK_FEW, BLOCK_SOME, BLOCK_ONLY_HIGH, HARM_BLOCK_THRESHOLD_UNSPECIFIED</span><br/><span class="hl-1">GEMINI_MODERATION_HARASSMENT_THRESHOLD</span><span class="hl-4">=</span><span class="hl-2">BLOCK_NONE</span><br/><span class="hl-1">GEMINI_MODERATION_HATE_SPEECH_THRESHOLD</span><span class="hl-4">=</span><span class="hl-2">BLOCK_NONE</span><span class="hl-1">  </span><br/><span class="hl-1">GEMINI_MODERATION_SEXUALLY_EXPLICIT_THRESHOLD</span><span class="hl-4">=</span><span class="hl-2">BLOCK_SOME</span><br/><span class="hl-1">GEMINI_MODERATION_DANGEROUS_CONTENT_THRESHOLD</span><span class="hl-4">=</span><span class="hl-2">BLOCK_ONLY_HIGH</span>
+</code><button type="button">Copy</button></pre>
+
+<p><strong>Safety Categories:</strong></p>
+<ul>
+<li><code>HARASSMENT</code>: Content that promotes hatred or violence against individuals/groups</li>
+<li><code>HATE_SPEECH</code>: Derogatory or demeaning language targeting specific groups</li>
+<li><code>SEXUALLY_EXPLICIT</code>: Content containing sexual or adult material</li>
+<li><code>DANGEROUS_CONTENT</code>: Content promoting dangerous or harmful activities</li>
+</ul>
+<h2 id="📡-api-endpoints" class="tsd-anchor-link">📡 API Endpoints<a href="#📡-api-endpoints" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="base-url" class="tsd-anchor-link">Base URL<a href="#base-url" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code><span class="hl-0">https</span><span class="hl-1">:</span><span class="hl-5">//your-worker.your-subdomain.workers.dev</span>
+</code><button>Copy</button></pre>
+
+<h3 id="list-models" class="tsd-anchor-link">List Models<a href="#list-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="http">GET /v1/models
+</code><button type="button">Copy</button></pre>
+
+<p><strong>Response:</strong></p>
+<pre><code class="json"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;object&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;list&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;data&quot;</span><span class="hl-1">: [</span><br/><span class="hl-1">    {</span><br/><span class="hl-1">      </span><span class="hl-3">&quot;id&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;gemini-2.5-pro&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-3">&quot;object&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;model&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-3">&quot;created&quot;</span><span class="hl-1">: </span><span class="hl-3">1708976947</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-3">&quot;owned_by&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;google-gemini-cli&quot;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  ]</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="chat-completions" class="tsd-anchor-link">Chat Completions<a href="#chat-completions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="http">POST /v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gemini-2.5-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user", 
+      "content": "Hello! How are you?"
+    }
+  ]
+}
+</code><button type="button">Copy</button></pre>
+
+<h4 id="thinking-mode-real-reasoning" class="tsd-anchor-link">Thinking Mode (Real Reasoning)<a href="#thinking-mode-real-reasoning" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>For models that support thinking, you can enable real reasoning from Gemini:</p>
+<pre><code class="http">POST /v1/chat/completions
+Content-Type: application/json
+
+{
+  "model": "gemini-2.5-pro",
+  "messages": [
+    {
+      "role": "user", 
+      "content": "Solve this math problem step by step: What is 15% of 240?"
+    }
+  ],
+  "include_reasoning": true,
+  "thinking_budget": 1024
+}
+</code><button type="button">Copy</button></pre>
+
+<p>The <code>include_reasoning</code> parameter enables Gemini's native thinking mode, and <code>thinking_budget</code> sets the token limit for reasoning.</p>
+<p><strong>Response (Streaming):</strong></p>
+<pre><code><span class="hl-0">data</span><span class="hl-1">: {</span><span class="hl-2">&quot;id&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;chatcmpl-123&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;object&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;chat.completion.chunk&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;created&quot;</span><span class="hl-1">:</span><span class="hl-3">1708976947</span><span class="hl-1">,</span><span class="hl-2">&quot;model&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;gemini-2.5-flash&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;choices&quot;</span><span class="hl-1">:[{</span><span class="hl-2">&quot;index&quot;</span><span class="hl-1">:</span><span class="hl-3">0</span><span class="hl-1">,</span><span class="hl-2">&quot;delta&quot;</span><span class="hl-1">:{</span><span class="hl-2">&quot;role&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;assistant&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;content&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;Hello&quot;</span><span class="hl-1">},</span><span class="hl-2">&quot;finish_reason&quot;</span><span class="hl-1">:</span><span class="hl-3">null</span><span class="hl-1">}]}</span><br/><br/><span class="hl-0">data</span><span class="hl-1">: {</span><span class="hl-2">&quot;id&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;chatcmpl-123&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;object&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;chat.completion.chunk&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;created&quot;</span><span class="hl-1">:</span><span class="hl-3">1708976947</span><span class="hl-1">,</span><span class="hl-2">&quot;model&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;gemini-2.5-flash&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;choices&quot;</span><span class="hl-1">:[{</span><span class="hl-2">&quot;index&quot;</span><span class="hl-1">:</span><span class="hl-3">0</span><span class="hl-1">,</span><span class="hl-2">&quot;delta&quot;</span><span class="hl-1">:{</span><span class="hl-2">&quot;content&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;! I&#39;m&quot;</span><span class="hl-1">},</span><span class="hl-2">&quot;finish_reason&quot;</span><span class="hl-1">:</span><span class="hl-3">null</span><span class="hl-1">}]}</span><br/><br/><span class="hl-0">data</span><span class="hl-1">: {</span><span class="hl-2">&quot;id&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;chatcmpl-123&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;object&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;chat.completion.chunk&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;created&quot;</span><span class="hl-1">:</span><span class="hl-3">1708976947</span><span class="hl-1">,</span><span class="hl-2">&quot;model&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;gemini-2.5-flash&quot;</span><span class="hl-1">,</span><span class="hl-2">&quot;choices&quot;</span><span class="hl-1">:[{</span><span class="hl-2">&quot;index&quot;</span><span class="hl-1">:</span><span class="hl-3">0</span><span class="hl-1">,</span><span class="hl-2">&quot;delta&quot;</span><span class="hl-1">:{},</span><span class="hl-2">&quot;finish_reason&quot;</span><span class="hl-1">:</span><span class="hl-2">&quot;stop&quot;</span><span class="hl-1">}],</span><span class="hl-2">&quot;usage&quot;</span><span class="hl-1">:{</span><span class="hl-2">&quot;prompt_tokens&quot;</span><span class="hl-1">:</span><span class="hl-3">22</span><span class="hl-1">,</span><span class="hl-2">&quot;completion_tokens&quot;</span><span class="hl-1">:</span><span class="hl-3">553</span><span class="hl-1">,</span><span class="hl-2">&quot;total_tokens&quot;</span><span class="hl-1">:</span><span class="hl-3">575</span><span class="hl-1">}}</span><br/><br/><span class="hl-0">data</span><span class="hl-1">: [</span><span class="hl-3">DONE</span><span class="hl-1">]</span>
+</code><button>Copy</button></pre>
+
+<h3 id="debug-endpoints" class="tsd-anchor-link">Debug Endpoints<a href="#debug-endpoints" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><h4 id="check-token-cache" class="tsd-anchor-link">Check Token Cache<a href="#check-token-cache" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="http">GET /v1/debug/cache
+</code><button type="button">Copy</button></pre>
+
+<h4 id="test-authentication" class="tsd-anchor-link">Test Authentication<a href="#test-authentication" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="http">POST /v1/token-test
+POST /v1/test
+</code><button type="button">Copy</button></pre>
+
+<h3 id="image-support-vision" class="tsd-anchor-link">Image Support (Vision)<a href="#image-support-vision" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>The worker supports multimodal conversations with images for vision-capable models. Images can be provided as base64-encoded data URLs or as external URLs.</p>
+<h4 id="supported-image-formats" class="tsd-anchor-link">Supported Image Formats<a href="#supported-image-formats" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><ul>
+<li>JPEG, PNG, GIF, WebP</li>
+<li>Base64 encoded (recommended for reliability)</li>
+<li>External URLs (may have limitations with some services)</li>
+</ul>
+<h4 id="vision-capable-models" class="tsd-anchor-link">Vision-Capable Models<a href="#vision-capable-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><ul>
+<li><code>gemini-2.5-pro</code></li>
+<li><code>gemini-2.5-flash</code></li>
+<li><code>gemini-2.0-flash-001</code></li>
+<li><code>gemini-2.0-flash-lite-preview-02-05</code></li>
+<li><code>gemini-2.0-pro-exp-02-05</code></li>
+</ul>
+<h4 id="example-with-base64-image" class="tsd-anchor-link">Example with Base64 Image<a href="#example-with-base64-image" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="python">from openai import OpenAI
+import base64
+
+# Encode your image
+with open("image.jpg", "rb") as image_file:
+    base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+
+client = OpenAI(
+    base_url="https://your-worker.workers.dev/v1",
+    api_key="sk-your-secret-api-key-here"
+)
+
+response = client.chat.completions.create(
+    model="gemini-2.5-flash",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "What do you see in this image?"
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}"
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+</code><button type="button">Copy</button></pre>
+
+<h4 id="example-with-image-url" class="tsd-anchor-link">Example with Image URL<a href="#example-with-image-url" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="bash"><span class="hl-0">curl</span><span class="hl-1"> </span><span class="hl-3">-X</span><span class="hl-1"> </span><span class="hl-2">POST</span><span class="hl-1"> </span><span class="hl-2">https://your-worker.workers.dev/v1/chat/completions</span><span class="hl-1"> </span><span class="hl-3">\</span><br/><span class="hl-1">  </span><span class="hl-3">-H</span><span class="hl-1"> </span><span class="hl-2">&quot;Content-Type: application/json&quot;</span><span class="hl-1"> </span><span class="hl-3">\</span><br/><span class="hl-1">  </span><span class="hl-3">-H</span><span class="hl-1"> </span><span class="hl-2">&quot;Authorization: Bearer sk-your-secret-api-key-here&quot;</span><span class="hl-1"> </span><span class="hl-3">\</span><br/><span class="hl-1">  </span><span class="hl-3">-d</span><span class="hl-1"> </span><span class="hl-2">&#39;{</span><br/><span class="hl-2">    &quot;model&quot;: &quot;gemini-2.5-pro&quot;,</span><br/><span class="hl-2">    &quot;messages&quot;: [</span><br/><span class="hl-2">      {</span><br/><span class="hl-2">        &quot;role&quot;: &quot;user&quot;,</span><br/><span class="hl-2">        &quot;content&quot;: [</span><br/><span class="hl-2">          {</span><br/><span class="hl-2">            &quot;type&quot;: &quot;text&quot;,</span><br/><span class="hl-2">            &quot;text&quot;: &quot;Describe this image in detail.&quot;</span><br/><span class="hl-2">          },</span><br/><span class="hl-2">          {</span><br/><span class="hl-2">            &quot;type&quot;: &quot;image_url&quot;,</span><br/><span class="hl-2">            &quot;image_url&quot;: {</span><br/><span class="hl-2">              &quot;url&quot;: &quot;https://example.com/image.jpg&quot;,</span><br/><span class="hl-2">              &quot;detail&quot;: &quot;high&quot;</span><br/><span class="hl-2">            }</span><br/><span class="hl-2">          }</span><br/><span class="hl-2">        ]</span><br/><span class="hl-2">      }</span><br/><span class="hl-2">    ]</span><br/><span class="hl-2">  }&#39;</span>
+</code><button type="button">Copy</button></pre>
+
+<h4 id="multiple-images" class="tsd-anchor-link">Multiple Images<a href="#multiple-images" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>You can include multiple images in a single message:</p>
+<pre><code class="json"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;model&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;gemini-2.5-pro&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-3">&quot;messages&quot;</span><span class="hl-1">: [</span><br/><span class="hl-1">    {</span><br/><span class="hl-1">      </span><span class="hl-3">&quot;role&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;user&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">      </span><span class="hl-3">&quot;content&quot;</span><span class="hl-1">: [</span><br/><span class="hl-1">        {</span><br/><span class="hl-1">          </span><span class="hl-3">&quot;type&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;text&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-3">&quot;text&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;Compare these two images.&quot;</span><br/><span class="hl-1">        },</span><br/><span class="hl-1">        {</span><br/><span class="hl-1">          </span><span class="hl-3">&quot;type&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;image_url&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-3">&quot;image_url&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">            </span><span class="hl-3">&quot;url&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;data:image/jpeg;base64,...&quot;</span><br/><span class="hl-1">          }</span><br/><span class="hl-1">        },</span><br/><span class="hl-1">        {</span><br/><span class="hl-1">          </span><span class="hl-3">&quot;type&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;image_url&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">          </span><span class="hl-3">&quot;image_url&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">            </span><span class="hl-3">&quot;url&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;data:image/png;base64,...&quot;</span><br/><span class="hl-1">          }</span><br/><span class="hl-1">        }</span><br/><span class="hl-1">      ]</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">  ]</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="debug-commands" class="tsd-anchor-link">Debug Commands<a href="#debug-commands" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="bash"><span class="hl-5"># Check KV cache status</span><br/><span class="hl-0">curl</span><span class="hl-1"> </span><span class="hl-2">https://your-worker.workers.dev/v1/debug/cache</span><br/><br/><span class="hl-5"># Test authentication only</span><br/><span class="hl-0">curl</span><span class="hl-1"> </span><span class="hl-3">-X</span><span class="hl-1"> </span><span class="hl-2">POST</span><span class="hl-1"> </span><span class="hl-2">https://your-worker.workers.dev/v1/token-test</span><br/><br/><span class="hl-5"># Test full flow</span><br/><span class="hl-0">curl</span><span class="hl-1"> </span><span class="hl-3">-X</span><span class="hl-1"> </span><span class="hl-2">POST</span><span class="hl-1"> </span><span class="hl-2">https://your-worker.workers.dev/v1/test</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="🏗️-how-it-works" class="tsd-anchor-link">🏗️ How It Works<a href="#🏗️-how-it-works" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><pre><code class="mermaid">graph TD
+    A[Client Request] --> B[Cloudflare Worker]
+    B --> C{Token in KV Cache?}
+    C -->|Yes| D[Use Cached Token]
+    C -->|No| E[Check Environment Token]
+    E --> F{Token Valid?}
+    F -->|Yes| G[Cache & Use Token]
+    F -->|No| H[Refresh Token]
+    H --> I[Cache New Token]
+    D --> J[Call Gemini API]
+    G --> J
+    I --> J
+    J --> K[Stream Response]
+    K --> L[OpenAI Format]
+    L --> M[Client Response]
+</code><button type="button">Copy</button></pre>
+
+<p>The worker acts as a translation layer, converting OpenAI API calls to Google's Code Assist API format while managing OAuth2 authentication automatically.</p>
+<h2 id="🤝-contributing" class="tsd-anchor-link">🤝 Contributing<a href="#🤝-contributing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ol>
+<li>Fork the repository</li>
+<li>Create a feature branch</li>
+<li>Make your changes</li>
+<li>Test thoroughly</li>
+<li>Submit a pull request</li>
+</ol>
+<h2 id="📄-license" class="tsd-anchor-link">📄 License<a href="#📄-license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>This codebase is provided for personal use and self-hosting only.</p>
+<p>Redistribution of the codebase, whether in original or modified form, is not permitted without prior written consent from the author.</p>
+<p>You may fork and modify the repository solely for the purpose of running and self-hosting your own instance.</p>
+<p>Any other form of distribution, sublicensing, or commercial use is strictly prohibited unless explicitly authorized.</p>
+<h2 id="🙏-acknowledgments" class="tsd-anchor-link">🙏 Acknowledgments<a href="#🙏-acknowledgments" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li>Inspired by the official <a href="https://github.com/google-gemini/gemini-cli">Google Gemini CLI</a></li>
+<li>Built on <a href="https://workers.cloudflare.com/">Cloudflare Workers</a></li>
+<li>Uses <a href="https://hono.dev/">Hono</a> web framework</li>
+</ul>
+<hr>
+<p><strong>⚠️ Important</strong>: This project uses Google's Code Assist API which may have usage limits and terms of service. Please ensure compliance with Google's policies when using this worker.</p>
+<p><a href="https://www.star-history.com/#GewoonJaap/gemini-cli-openai&amp;Date"><img src="https://api.star-history.com/svg?repos=GewoonJaap/gemini-cli-openai&amp;type=Date" alt="Star History Chart"></a></p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#🚀-gemini-cli-openai-worker"><span>🚀 <wbr/>Gemini <wbr/>CLI <wbr/>Open<wbr/>AI <wbr/>Worker</span></a><ul><li><a href="#✨-features"><span>✨ <wbr/>Features</span></a></li><li><a href="#🤖-supported-models"><span>🤖 <wbr/>Supported <wbr/>Models</span></a></li><li><a href="#�🛠️-setup"><span>�🛠️ <wbr/>Setup</span></a></li><li><ul><li><a href="#prerequisites"><span>Prerequisites</span></a></li><li><a href="#step-1-get-oauth2-credentials"><span>Step 1: <wbr/>Get <wbr/>O<wbr/>Auth2 <wbr/>Credentials</span></a></li><li><ul><li><a href="#using-gemini-cli"><span>Using <wbr/>Gemini <wbr/>CLI</span></a></li></ul></li><li><a href="#step-2-create-kv-namespace"><span>Step 2: <wbr/>Create <wbr/>KV <wbr/>Namespace</span></a></li><li><a href="#step-3-environment-setup"><span>Step 3: <wbr/>Environment <wbr/>Setup</span></a></li><li><a href="#step-4-deploy"><span>Step 4: <wbr/>Deploy</span></a></li></ul></li><li><a href="#🔧-configuration"><span>🔧 <wbr/>Configuration</span></a></li><li><ul><li><a href="#environment-variables"><span>Environment <wbr/>Variables</span></a></li><li><ul><li><a href="#core-configuration"><span>Core <wbr/>Configuration</span></a></li><li><a href="#thinking-reasoning"><span>Thinking &amp; <wbr/>Reasoning</span></a></li><li><a href="#model-feature-flags"><span>Model &amp; <wbr/>Feature <wbr/>Flags</span></a></li><li><a href="#content-safety"><span>Content <wbr/>Safety</span></a></li></ul></li><li><a href="#kv-namespaces"><span>KV <wbr/>Namespaces</span></a></li></ul></li><li><a href="#🚨-troubleshooting"><span>🚨 <wbr/>Troubleshooting</span></a></li><li><ul><li><a href="#common-issues"><span>Common <wbr/>Issues</span></a></li></ul></li><li><a href="#💻-usage-examples"><span>💻 <wbr/>Usage <wbr/>Examples</span></a></li><li><ul><li><a href="#cline-integration"><span>Cline <wbr/>Integration</span></a></li><li><a href="#open-webui-integration"><span>Open <wbr/>Web<wbr/>UI <wbr/>Integration</span></a></li><li><a href="#litellm-integration"><span>Lite<wbr/>LLM <wbr/>Integration</span></a></li><li><a href="#openai-sdk-python"><span>Open<wbr/>AI <wbr/>SDK (<wbr/>Python)</span></a></li><li><a href="#openai-sdk-javascripttypescript"><span>Open<wbr/>AI <wbr/>SDK (<wbr/>Java<wbr/>Script/<wbr/>Type<wbr/>Script)</span></a></li><li><a href="#curl"><span>c<wbr/>URL</span></a></li><li><a href="#raw-javascripttypescript"><span>Raw <wbr/>Java<wbr/>Script/<wbr/>Type<wbr/>Script</span></a></li><li><a href="#raw-python-without-sdk"><span>Raw <wbr/>Python (without <wbr/>SDK)</span></a></li></ul></li><li><a href="#�-tool-calling-support"><span>� <wbr/>Tool <wbr/>Calling <wbr/>Support</span></a></li><li><ul><li><a href="#using-tool-calls"><span>Using <wbr/>Tool <wbr/>Calls</span></a></li><li><a href="#tool-choice-options"><span>Tool <wbr/>Choice <wbr/>Options</span></a></li></ul></li><li><a href="#🛡️-content-safety-settings"><span>🛡️ <wbr/>Content <wbr/>Safety <wbr/>Settings</span></a></li><li><a href="#📡-api-endpoints"><span>📡 <wbr/>API <wbr/>Endpoints</span></a></li><li><ul><li><a href="#base-url"><span>Base <wbr/>URL</span></a></li><li><a href="#list-models"><span>List <wbr/>Models</span></a></li><li><a href="#chat-completions"><span>Chat <wbr/>Completions</span></a></li><li><ul><li><a href="#thinking-mode-real-reasoning"><span>Thinking <wbr/>Mode (<wbr/>Real <wbr/>Reasoning)</span></a></li></ul></li><li><a href="#debug-endpoints"><span>Debug <wbr/>Endpoints</span></a></li><li><ul><li><a href="#check-token-cache"><span>Check <wbr/>Token <wbr/>Cache</span></a></li><li><a href="#test-authentication"><span>Test <wbr/>Authentication</span></a></li></ul></li><li><a href="#image-support-vision"><span>Image <wbr/>Support (<wbr/>Vision)</span></a></li><li><ul><li><a href="#supported-image-formats"><span>Supported <wbr/>Image <wbr/>Formats</span></a></li><li><a href="#vision-capable-models"><span>Vision-<wbr/>Capable <wbr/>Models</span></a></li><li><a href="#example-with-base64-image"><span>Example with <wbr/>Base64 <wbr/>Image</span></a></li><li><a href="#example-with-image-url"><span>Example with <wbr/>Image <wbr/>URL</span></a></li><li><a href="#multiple-images"><span>Multiple <wbr/>Images</span></a></li></ul></li><li><a href="#debug-commands"><span>Debug <wbr/>Commands</span></a></li></ul></li><li><a href="#🏗️-how-it-works"><span>🏗️ <wbr/>How <wbr/>It <wbr/>Works</span></a></li><li><a href="#🤝-contributing"><span>🤝 <wbr/>Contributing</span></a></li><li><a href="#📄-license"><span>📄 <wbr/>License</span></a></li><li><a href="#🙏-acknowledgments"><span>🙏 <wbr/>Acknowledgments</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">Gemini CLI OpenAI Worker - v1.0.0</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
